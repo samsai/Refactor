@@ -1,12 +1,10 @@
 package com.refactor.case8.util;
 
-import com.cmb.ccd.common.domain.model.DomainValueObject;
-import com.cmb.ccd.common.util.IdGenerator;
 
 import javax.persistence.Column;
 import java.io.Serializable;
 
-public class DataSourceId extends DomainValueObject implements Comparable<DataSourceId>, Serializable {
+public class DataSourceId implements Comparable<DataSourceId>, Serializable {
     public static DataSourceId of(String id) {
         if (id == null || id.length() == 0)
             return null;
@@ -17,15 +15,11 @@ public class DataSourceId extends DomainValueObject implements Comparable<DataSo
     private String id;
 
     DataSourceId() {
-        this.id = IdGenerator.id();
+        this.id = "";
     }
 
     DataSourceId(String id) {
         this.id = id;
-    }
-
-    public String id() {
-        return id;
     }
 
     @Override
