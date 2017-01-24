@@ -1,0 +1,20 @@
+
+# comment 
+*.iml
+# log file
+*.log*
+# build files 
+*/WebRoot/WEB-INF/classes/
+*/WebContent/WEB-INF/classes/
+*/webapp/WEB-INF/classes/
+**/build/
+**/bin
+*.class
+#ide file
+*/.idea/
+.idea/
+*/out/
+~*
+# config files 
+*/target/
+**/driver.spring.xml
