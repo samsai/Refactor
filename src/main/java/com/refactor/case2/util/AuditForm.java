@@ -5,7 +5,7 @@
 package com.refactor.case2.util;
 
 public interface AuditForm {
-    boolean isFlag();
+    boolean isAuditPass();
 
     long getCaseId();
 

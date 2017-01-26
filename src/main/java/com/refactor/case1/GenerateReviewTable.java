@@ -29,6 +29,7 @@ public class GenerateReviewTable {
         this.reviewTempTableSql = reviewTempTable.generateSql();
     }
 
+    //按配置动态拼出一个sql语句
     public String generateSql() {
         String channelColumnClauseTemp = StringUtil.flat(channelColumns, ",", "", "");
         String channelColumnClause;
@@ -55,10 +56,10 @@ public class GenerateReviewTable {
         }
 
         StringBuffer vsql = new StringBuffer();
-        vsql.append("insert into ").append(Constant.MR_MKT_SCHEMA).append(".").append(tableName)
+        vsql.append("insert into ").append(Constant.DB_SCHEMA).append(".").append(tableName)
                 .append(" (").append(channelColumnsReview).append(")")
                 .append(" select distinct ").append(channelColumnsReviewTemp.replace(Constant.CITYNAME_COLUMN, "isnull(" + Constant.CITYNAME_COLUMN + ",'未知城市') as " + Constant.CITYNAME_COLUMN))
-                .append(" from ").append(Constant.MR_MKT_SCHEMA).append(".").append(sourceTableName).append(";\n");
+                .append(" from ").append(Constant.DB_SCHEMA).append(".").append(sourceTableName).append(";\n");
 
         return reviewTempTableSql + vsql.toString();
     }

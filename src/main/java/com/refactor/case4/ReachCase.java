@@ -117,7 +117,7 @@ public abstract class ReachCase {
         return getNaviCode();
     }
 
-    //单次,多次的导航栏
+    //活动的导航栏
     private String getNaviCode() {
         char[] naviCode = {'1', '0', '0', '0', '0', '0', '0', '0'};
         CaseLifeCycle caseLifeCycle = this.getCurrentCaseLifeCycle();

@@ -23,16 +23,13 @@ public class RealTimeQualController {
     @Resource
     private CasesService casesService;
 
-    /**
-     * IT审核结果：通过和退回
-     *
-     * @return
-     */
+
     @RequestMapping(value = "/it/auditor", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    //营销活动的IT部门审核，记录审核结果和流水，修改活动和活动下Action对象的状态
     public void itAudit(@RequestBody AuditForm form) {
         Case remarkCase = casesService.queryById(Long.valueOf(form.getCaseId()));
-        if (form.isFlag()) {
+        if (form.isAuditPass()) {
             remarkCase.setState(CaseState.上线运行);
             CaseWorkflowRecord.CaseOperation op = CaseWorkflowRecord.CaseOperation.IT审核;
             Set<Action> actions = remarkCase.getActions();
@@ -49,8 +46,8 @@ public class RealTimeQualController {
             remarkCase.setState(CaseState.IT审核退回);
             CaseWorkflowRecord.CaseOperation op = CaseWorkflowRecord.CaseOperation.IT审核;
             remarkCase.addWorkflowRecordWithRemark(form.getUserId(), "", op, form.getNoticeRemark(), 2);
-            casesService.updateCaseCode(remarkCase);
         }
+        casesService.updateCaseCode(remarkCase);
     }
 
 }

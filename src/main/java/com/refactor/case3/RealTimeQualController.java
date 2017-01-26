@@ -14,10 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Created by armysheng on 2015/11/20.
- * 实时达标控制器
- */
 @Controller("realTimeQualController")
 @RequestMapping("/ams/cases/realtimeQual/")
 public class RealTimeQualController {
@@ -27,21 +23,10 @@ public class RealTimeQualController {
     @Resource
     private UDRTagRequestService udrTagRequestService;
 
-    /**
-     * 获取名单配置
-     *
-     * @param caseId
-     * @return
-     * $scope.nameListTagTree = {'class': 'tree-root', 'detail': '','rootId':0,'conditionType':'', 'node': [
-        {'class': 'primary-leaf','tagId':'','opType':'','opValue':'', 'detail': '','leafId':'R'+leafId, 'node': []},
-    ]
-    };
-     * @throws Exception 
-     */
     @RequestMapping(value = "nameList/get", method = RequestMethod.GET)
-    public
     @ResponseBody
-    String getNameList(Long caseId) throws Exception {
+	//一个TreeRoot与Node有一对一关系，Node下有多个Leaf或TreeRoot。大致了解即可，不影响重构过程
+	public String getNameList(Long caseId) throws Exception {
     	Case casee = casesService.queryById(caseId);
     	Set<NameList> nameA = casee.getNamelistGroup(NameListGroup.NameListGroupType.A组).getLists();
     	//目前只有一个A名单组,无需遍历
