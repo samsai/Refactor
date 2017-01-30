@@ -35,13 +35,18 @@ public class GenerateReviewTable {
         String sourceColumnsStr = transformToString(this.channelColumns);
         String targetColumnsStr = transformToString(getTargetColumns());
 
+        String insertSql = generateInsertSql(sourceColumnsStr, targetColumnsStr);
+        return reviewTempTableSql + insertSql;
+    }
+
+    private String generateInsertSql(String sourceColumnsStr, String targetColumnsStr) {
         StringBuffer vsql = new StringBuffer();
         vsql.append("insert into ").append(Constant.DB_SCHEMA).append(".").append(tableName)
                 .append(" (").append(targetColumnsStr).append(")")
                 .append(" select distinct ").append(sourceColumnsStr.replace(Constant.CITYNAME_COLUMN, "isnull(" + Constant.CITYNAME_COLUMN + ",'未知城市') as " + Constant.CITYNAME_COLUMN))
                 .append(" from ").append(Constant.DB_SCHEMA).append(".").append(sourceTableName).append(";\n");
 
-        return reviewTempTableSql + vsql.toString();
+        return vsql.toString();
     }
 
     private String transformToString(Set<String> columns) {
