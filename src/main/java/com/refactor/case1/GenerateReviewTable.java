@@ -33,12 +33,17 @@ public class GenerateReviewTable {
     public String generateSql() {
 
         String sourceColumnsStr = "";
-        String targetColumnsStr = "";
         if (!channelColumns.isEmpty()) {
             String sourceColumnsWithoutBatchId = StringUtil.flat(channelColumns, ",", "", "");
             sourceColumnsStr = sourceColumnsWithoutBatchId +
                     (channelColumns.contains(idTypeColumn) ? "" : ("," + idTypeColumn)) + ",batch_id";
 
+        } else {
+            sourceColumnsStr = idTypeColumn + ",batch_id";
+        }
+
+        String targetColumnsStr = "";
+        if (!channelColumns.isEmpty()) {
             String targetColumnsWithoutBatchId;
             Set<String> columns = new TreeSet<>();
             for (String str : channelColumns) {
@@ -52,7 +57,6 @@ public class GenerateReviewTable {
             targetColumnsStr = targetColumnsWithoutBatchId +
                     (channelColumns.contains(idTypeColumn) ? "" : ("," + idTypeColumn)) + ",batch_id";
         } else {
-            sourceColumnsStr = idTypeColumn + ",batch_id";
             targetColumnsStr = idTypeColumn + ",batch_id";
         }
 
