@@ -31,34 +31,35 @@ public class GenerateReviewTable {
 
     //按配置动态拼出一个sql语句
     public String generateSql() {
-        String channelColumnClauseTemp = StringUtil.flat(channelColumns, ",", "", "");
-        String channelColumnClause;
-        Set<String> columns = new TreeSet<>();
-        for (String str : channelColumns) {
-            if (ChannelId.CLT_BUS_EML_ADR.toString().equals(str)) {
-                columns.add(ChannelId.CLT_EML_ADR.toString());
-            } else {
-                columns.add(str);
-            }
-        }
-        channelColumnClause = StringUtil.flat(columns, ",", "", "");
 
-        String channelColumnsReviewTemp = "";
-        String channelColumnsReview = "";
+        String sourceColumnsStr = "";
+        String targetColumnsStr = "";
         if (!channelColumns.isEmpty()) {
-            channelColumnsReviewTemp = channelColumnClauseTemp +
+            String sourceColumnsWithoutBatchId = StringUtil.flat(channelColumns, ",", "", "");
+            sourceColumnsStr = sourceColumnsWithoutBatchId +
                     (channelColumns.contains(idTypeColumn) ? "" : ("," + idTypeColumn)) + ",batch_id";
-            channelColumnsReview = channelColumnClause +
+
+            String targetColumnsWithoutBatchId;
+            Set<String> columns = new TreeSet<>();
+            for (String str : channelColumns) {
+                if (ChannelId.CLT_BUS_EML_ADR.toString().equals(str)) {
+                    columns.add(ChannelId.CLT_EML_ADR.toString());
+                } else {
+                    columns.add(str);
+                }
+            }
+            targetColumnsWithoutBatchId = StringUtil.flat(columns, ",", "", "");
+            targetColumnsStr = targetColumnsWithoutBatchId +
                     (channelColumns.contains(idTypeColumn) ? "" : ("," + idTypeColumn)) + ",batch_id";
         } else {
-            channelColumnsReviewTemp = idTypeColumn + ",batch_id";
-            channelColumnsReview = idTypeColumn + ",batch_id";
+            sourceColumnsStr = idTypeColumn + ",batch_id";
+            targetColumnsStr = idTypeColumn + ",batch_id";
         }
 
         StringBuffer vsql = new StringBuffer();
         vsql.append("insert into ").append(Constant.DB_SCHEMA).append(".").append(tableName)
-                .append(" (").append(channelColumnsReview).append(")")
-                .append(" select distinct ").append(channelColumnsReviewTemp.replace(Constant.CITYNAME_COLUMN, "isnull(" + Constant.CITYNAME_COLUMN + ",'未知城市') as " + Constant.CITYNAME_COLUMN))
+                .append(" (").append(targetColumnsStr).append(")")
+                .append(" select distinct ").append(sourceColumnsStr.replace(Constant.CITYNAME_COLUMN, "isnull(" + Constant.CITYNAME_COLUMN + ",'未知城市') as " + Constant.CITYNAME_COLUMN))
                 .append(" from ").append(Constant.DB_SCHEMA).append(".").append(sourceTableName).append(";\n");
 
         return reviewTempTableSql + vsql.toString();
