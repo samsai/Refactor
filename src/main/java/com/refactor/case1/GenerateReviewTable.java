@@ -30,46 +30,44 @@ public class GenerateReviewTable {
     }
 
     //按配置动态拼出一个sql语句
-public String generateSql() {
+    public String generateSql() {
 
-    String sourceColumnsStr = computeSourceColumnsStr();
+        String sourceColumnsStr = computeSourceColumnsStr();
 
-    String targetColumnsStr = computeTargetColumnsStr();
+        String targetColumnsStr = computeTargetColumnsStr();
 
-    StringBuffer vsql = new StringBuffer();
-    vsql.append("insert into ").append(Constant.DB_SCHEMA).append(".").append(tableName)
-            .append(" (").append(targetColumnsStr).append(")")
-            .append(" select distinct ").append(sourceColumnsStr.replace(Constant.CITYNAME_COLUMN, "isnull(" + Constant.CITYNAME_COLUMN + ",'未知城市') as " + Constant.CITYNAME_COLUMN))
-            .append(" from ").append(Constant.DB_SCHEMA).append(".").append(sourceTableName).append(";\n");
+        StringBuffer vsql = new StringBuffer();
+        vsql.append("insert into ").append(Constant.DB_SCHEMA).append(".").append(tableName)
+                .append(" (").append(targetColumnsStr).append(")")
+                .append(" select distinct ").append(sourceColumnsStr.replace(Constant.CITYNAME_COLUMN, "isnull(" + Constant.CITYNAME_COLUMN + ",'未知城市') as " + Constant.CITYNAME_COLUMN))
+                .append(" from ").append(Constant.DB_SCHEMA).append(".").append(sourceTableName).append(";\n");
 
-    return reviewTempTableSql + vsql.toString();
-}
+        return reviewTempTableSql + vsql.toString();
+    }
 
     private String computeTargetColumnsStr() {
-        String targetColumnsStr = "";
-        if (!channelColumns.isEmpty()) {
-            Set<String> columns = getTargetColumns();
-            String targetColumnsWithoutBatchId = StringUtil.flat(columns, ",", "", "");
-            targetColumnsStr = targetColumnsWithoutBatchId +
-                    (channelColumns.contains(idTypeColumn) ? "" : ("," + idTypeColumn)) + ",batch_id";
-        } else {
-            targetColumnsStr = idTypeColumn + ",batch_id";
-        }
-        return targetColumnsStr;
+        Set<String> columns = getTargetColumns();
+        return transformToString(columns);
     }
 
     private String computeSourceColumnsStr() {
-        String sourceColumnsStr = "";
+        Set<String> columns = this.channelColumns;
+        return transformToString(columns);
+    }
+
+    private String transformToString(Set<String> columns) {
+        String columnsStr = "";
         if (!channelColumns.isEmpty()) {
-            String sourceColumnsWithoutBatchId = StringUtil.flat(channelColumns, ",", "", "");
-            sourceColumnsStr = sourceColumnsWithoutBatchId +
-                    (channelColumns.contains(idTypeColumn) ? "" : ("," + idTypeColumn)) + ",batch_id";
+            String columnsStrWithoutBatchId = StringUtil.flat(columns, ",", "", "");
+            columnsStr = columnsStrWithoutBatchId +
+                    (this.channelColumns.contains(idTypeColumn) ? "" : ("," + idTypeColumn)) + ",batch_id";
 
         } else {
-            sourceColumnsStr = idTypeColumn + ",batch_id";
+            columnsStr = idTypeColumn + ",batch_id";
         }
-        return sourceColumnsStr;
+        return columnsStr;
     }
+
     private Set<String> getTargetColumns() {
         Set<String> columns = new TreeSet<>();
         for (String str : channelColumns) {
