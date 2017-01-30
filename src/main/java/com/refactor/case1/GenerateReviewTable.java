@@ -32,9 +32,8 @@ public class GenerateReviewTable {
     //按配置动态拼出一个sql语句
     public String generateSql() {
 
-        String sourceColumnsStr = computeSourceColumnsStr();
-
-        String targetColumnsStr = computeTargetColumnsStr();
+        String sourceColumnsStr = transformToString(this.channelColumns);
+        String targetColumnsStr = transformToString(getTargetColumns());
 
         StringBuffer vsql = new StringBuffer();
         vsql.append("insert into ").append(Constant.DB_SCHEMA).append(".").append(tableName)
@@ -43,16 +42,6 @@ public class GenerateReviewTable {
                 .append(" from ").append(Constant.DB_SCHEMA).append(".").append(sourceTableName).append(";\n");
 
         return reviewTempTableSql + vsql.toString();
-    }
-
-    private String computeTargetColumnsStr() {
-        Set<String> columns = getTargetColumns();
-        return transformToString(columns);
-    }
-
-    private String computeSourceColumnsStr() {
-        Set<String> columns = this.channelColumns;
-        return transformToString(columns);
     }
 
     private String transformToString(Set<String> columns) {
