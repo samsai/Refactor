@@ -1,6 +1,7 @@
 package com.refactor.case2;
 
-import com.refactor.case2.util.*;
+import com.refactor.case2.util.AuditForm;
+import com.refactor.case2.util.CasesService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.annotation.Resource;
-import java.util.Iterator;
-import java.util.Set;
 
 /**
  * Created by armysheng on 2015/11/20.
@@ -32,34 +31,14 @@ public class RealTimeQualController {
         if (form.isAuditPass()) {
             String userId = form.getUserId();
             String remark = form.getNoticeRemark();
-            passItAudit(remarkCase, userId, remark);
+            remarkCase.passItAudit(userId, remark);
         }
         else {
             String userId = form.getUserId();
             String remark = form.getNoticeRemark();
-            withdrawItAudit(remarkCase, userId, remark);
+            remarkCase.withdrawItAudit(userId, remark);
         }
         casesService.updateCaseCode(remarkCase);
-    }
-
-    private void withdrawItAudit(Case remarkCase, String userId, String remark) {
-        remarkCase.setState(CaseState.IT审核退回);
-        CaseWorkflowRecord.CaseOperation op = CaseWorkflowRecord.CaseOperation.IT审核;
-        remarkCase.addWorkflowRecordWithRemark(userId, "", op, remark, 2);
-    }
-
-    private void passItAudit(Case remarkCase, String userId, String remark) {
-        remarkCase.setState(CaseState.上线运行);
-        CaseWorkflowRecord.CaseOperation op = CaseWorkflowRecord.CaseOperation.IT审核;
-        Set<Action> actions = remarkCase.getActions();
-        Iterator<Action> it = actions.iterator();
-        Action action = it.next();
-        if (remarkCase.isReach()) {
-            action.setActionState(ActionConstant.ActionState.READY_TO_RUN_BATCH.getState());
-        } else {
-            action.setActionState(ActionConstant.ActionState.HAS_CHECKED.getState());
-        }
-        remarkCase.addWorkflowRecordWithRemark(userId, "", op, remark, 1);
     }
 
 }
