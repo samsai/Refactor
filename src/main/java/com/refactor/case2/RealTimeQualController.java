@@ -30,24 +30,36 @@ public class RealTimeQualController {
     public void itAudit(@RequestBody AuditForm form) {
         Case remarkCase = casesService.queryById(Long.valueOf(form.getCaseId()));
         if (form.isAuditPass()) {
-            remarkCase.setState(CaseState.上线运行);
-            CaseWorkflowRecord.CaseOperation op = CaseWorkflowRecord.CaseOperation.IT审核;
-            Set<Action> actions = remarkCase.getActions();
-            Iterator<Action> it = actions.iterator();
-            Action action = it.next();
-            if (remarkCase.isReach()) {
-                action.setActionState(ActionConstant.ActionState.READY_TO_RUN_BATCH.getState());
-            } else {
-                action.setActionState(ActionConstant.ActionState.HAS_CHECKED.getState());
-            }
-            remarkCase.addWorkflowRecordWithRemark(form.getUserId(), "", op, form.getNoticeRemark(), 1);
+            String userId = form.getUserId();
+            String remark = form.getNoticeRemark();
+            passItAudit(remarkCase, userId, remark);
         }
         else {
-            remarkCase.setState(CaseState.IT审核退回);
-            CaseWorkflowRecord.CaseOperation op = CaseWorkflowRecord.CaseOperation.IT审核;
-            remarkCase.addWorkflowRecordWithRemark(form.getUserId(), "", op, form.getNoticeRemark(), 2);
+            String userId = form.getUserId();
+            String remark = form.getNoticeRemark();
+            withdrawItAudit(remarkCase, userId, remark);
         }
         casesService.updateCaseCode(remarkCase);
+    }
+
+    private void withdrawItAudit(Case remarkCase, String userId, String remark) {
+        remarkCase.setState(CaseState.IT审核退回);
+        CaseWorkflowRecord.CaseOperation op = CaseWorkflowRecord.CaseOperation.IT审核;
+        remarkCase.addWorkflowRecordWithRemark(userId, "", op, remark, 2);
+    }
+
+    private void passItAudit(Case remarkCase, String userId, String remark) {
+        remarkCase.setState(CaseState.上线运行);
+        CaseWorkflowRecord.CaseOperation op = CaseWorkflowRecord.CaseOperation.IT审核;
+        Set<Action> actions = remarkCase.getActions();
+        Iterator<Action> it = actions.iterator();
+        Action action = it.next();
+        if (remarkCase.isReach()) {
+            action.setActionState(ActionConstant.ActionState.READY_TO_RUN_BATCH.getState());
+        } else {
+            action.setActionState(ActionConstant.ActionState.HAS_CHECKED.getState());
+        }
+        remarkCase.addWorkflowRecordWithRemark(userId, "", op, remark, 1);
     }
 
 }
