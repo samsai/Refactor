@@ -28,14 +28,12 @@ public class RealTimeQualController {
     //营销活动的IT部门审核，记录审核结果和流水，修改活动和活动下Action对象的状态
     public void itAudit(@RequestBody AuditForm form) {
         Case remarkCase = casesService.queryById(Long.valueOf(form.getCaseId()));
+        String userId = form.getUserId();
+        String remark = form.getNoticeRemark();
         if (form.isAuditPass()) {
-            String userId = form.getUserId();
-            String remark = form.getNoticeRemark();
             remarkCase.passItAudit(userId, remark);
         }
         else {
-            String userId = form.getUserId();
-            String remark = form.getNoticeRemark();
             remarkCase.withdrawItAudit(userId, remark);
         }
         casesService.updateCaseCode(remarkCase);
